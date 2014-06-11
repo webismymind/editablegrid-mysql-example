@@ -2,34 +2,37 @@
 
 /*
  * php/EditableGrid.php
- * 
- * This file is part of EditableGrid.
- * http://editablegrid.net
  *
- * Copyright (c) 2011 Webismymind SPRL
+ * This file is part of EditableGrid.
+ * http://www.editablegrid.net
+ *
+ * Copyright (c) 2012 Webismymind SPRL
  * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://editablegrid.net/license
+ * http://www.editablegrid.net/page/en/9/license.html
  */
 
 class EditableGrid {
 
 	protected $columns;
 	protected $encoding;
+	protected $writeColumnNames; // write column names in XML and JSON (set to false to save bandwidth)
+	protected $formatXML;
+	protected $paginator;
 
-	function __construct($encoding = "utf-8")
+	function __construct($encoding = "utf-8", $writeColumnNames = false, $formatXML = false)
 	{
 		$this->encoding = $encoding;
 		$this->columns = array();
+		$this->writeColumnNames = $writeColumnNames;
+		$this->formatXML = $formatXML;
+		$this->paginator = null;
 	}
 
-	public static function escapeXML($str)
+	public function getColumnLabels()
 	{
-		$str = str_replace("&", "&amp;", $str);
-		$str = str_replace('"', "&quot;", $str);
-		$str = str_replace("'", "&apos;", $str);
-		$str = str_replace("<", "&lt;", $str);
-		$str = str_replace(">", "&gt;", $str);
-		return $str;
+		$labels = array();
+		foreach ($this->columns as $name => $column) $labels[$name] = $column['label'];
+		return $labels;
 	}
 
 	public function addColumn($name, $label, $type, $values = NULL, $editable = true, $field = NULL, $bar = true)
@@ -37,118 +40,184 @@ class EditableGrid {
 		$this->columns[$name] = array("field" => $field ? $field : $name, "label" => $label, "type" => $type, "editable" => $editable, "bar" => $bar, "values" => $values );
 	}
 
+	/**
+	 *
+	 * Set parameters needed for server-side pagination
+	 * @param integer $pageCount number of pages
+	 * @param integer $totalRowCount total numer of rows in all pages
+	 * @param integer $unfilteredRowCount total number of rows, not taking the filter into account
+	 */
+	public function setPaginator($pageCount, $totalRowCount, $unfilteredRowCount, $customAttributes = NULL)
+	{
+		$this->paginator = array('pagecount' => $pageCount, 'totalrowcount' => $totalRowCount, 'unfilteredrowcount' => $unfilteredRowCount);
+		if (is_array($customAttributes)) foreach ($customAttributes as $key => $value) $this->paginator[$key] = $value;
+	}
+
 	private function _getRowField($row, $field)
 	{
 		$value = is_array($row) ? (isset($row[$field]) ? $row[$field] : '') : (isset($row->$field) ? $row->$field : '');
 
 		// to avoid any issue with javascript not able to parse XML, ensure data is valid for encoding
-		return @iconv($this->encoding, $this->encoding."//IGNORE", $value);
+		return @iconv($this->encoding, "utf-8//IGNORE", $value);
 	}
 
-	public function getXML($rows, $customRowAttributes=array(), $encodeCustomAttributes=false)
+	public function getXML($rows=false, $customRowAttributes=false, $encodeCustomAttributes=false, $includeMetadata=true)
 	{
-		$xml = '<?xml version="1.0" encoding="'. $this->encoding . '" ?>';
+		// document and root table node
+		$DOMDocument = new DOMDocument('1.0', $this->encoding);
+		$DOMDocument->formatOutput = $this->formatXML;
+		$DOMDocument->appendChild($rootNode = $DOMDocument->createElement('table'));
 
-		$xml.= "<table><metadata>\n";
+		if ($includeMetadata) {
 
-		foreach ($this->columns as $name => $info) {
-			$label = self::escapeXML(@iconv($this->encoding, $this->encoding."//IGNORE", $info['label']));
-			$xml.= "<column name='$name' label='$label' datatype='{$info['type']}'". ($info['bar'] ? "" : " bar='false'") . " editable='". ($info['editable'] ? "true" : "false") . "'>\n";
-			if (is_array($info['values'])) {
-				$xml.= "<values>\n";
-				foreach ($info['values'] as $key => $value) {
-					if (is_array($value)) {
-						$grouplabel = self::escapeXML(@iconv($this->encoding, $this->encoding."//IGNORE", $key));
-						$xml.= "<group label='$grouplabel'>\n";
-						$values = $value;
-						foreach ($values as $key => $value) {
-							$clean_value = @iconv($this->encoding, $this->encoding."//IGNORE", $value);
-							$xml.= "<value value='{$key}'><![CDATA[{$clean_value}]]></value>\n";
+			// metadata
+			$rootNode->appendChild($metadataNode = $DOMDocument->createElement('metadata'));
+			foreach ($this->columns as $name => $info) {
+
+				// column with attributes
+				$metadataNode->appendChild($columnNode = $DOMDocument->createElement('column'));
+				$columnNode->setAttribute('name', $name);
+				$columnNode->setAttribute('label', @iconv($this->encoding, "utf-8//IGNORE", $info['label']));
+				$columnNode->setAttribute('datatype', @iconv($this->encoding, "utf-8//IGNORE", $info['type']));
+				if (!$info['bar']) $columnNode->setAttribute('bar', 'false');
+				$columnNode->setAttribute('editable', $info['editable'] ? "true" : "false");
+
+				if (is_array($info['values'])) {
+
+					// values
+					$columnNode->appendChild($valuesNode = $DOMDocument->createElement('values'));
+					foreach ($info['values'] as $key => $value) {
+						if (is_array($value)) {
+
+							// group with attribute and content
+							$valuesNode->appendChild($groupNode = $DOMDocument->createElement('group'));
+							$groupNode->setAttribute('label', @iconv($this->encoding, "utf-8//IGNORE", $key));
+
+							$values = $value;
+							foreach ($values as $key => $value) {
+
+								// value with attribute and content
+								$groupNode->appendChild($valueNode = $DOMDocument->createElement('value'));
+								$valueNode->setAttribute('value', $key);
+								$valueNode->appendChild($DOMDocument->createCDATASection(@iconv($this->encoding, "utf-8//IGNORE", $value)));
+							}
 						}
-						$xml.= "</group>\n";
-					}
-					else {
-						$clean_value = @iconv($this->encoding, $this->encoding."//IGNORE", $value);
-						$xml.= "<value value='{$key}'><![CDATA[{$clean_value}]]></value>\n";
+						else {
+
+							// value with attribute and content
+							$valuesNode->appendChild($valueNode = $DOMDocument->createElement('value'));
+							$valueNode->setAttribute('value', $key);
+							$valueNode->appendChild($DOMDocument->createCDATASection(@iconv($this->encoding, "utf-8//IGNORE", $value)));
+						}
 					}
 				}
-				$xml.= "</values>\n";
 			}
-			$xml.= "</column>\n";
 		}
 
+		if ($this->paginator !== null) {
+			$rootNode->appendChild($paginatorNode = $DOMDocument->createElement('paginator'));
+			foreach ($this->paginator as $key => $value) $paginatorNode->setAttribute($key, $value);
+		}
 
-		$xml.= "</metadata><data>\n";
+		// data
+		$rootNode->appendChild($dataNode = $DOMDocument->createElement('data'));
+		if ($rows) {
+			$fetchMethod = method_exists($rows, 'fetch') ? 'fetch' : (method_exists($rows, 'fetch_assoc') ? 'fetch_assoc' : (method_exists($rows, 'FetchRow') ? 'FetchRow' : NULL));
+			if (!$fetchMethod) foreach ($rows as $row) $dataNode->appendChild($this->getRowXML($DOMDocument, $row, $customRowAttributes, $encodeCustomAttributes));
+			else while ($row = call_user_func(array($rows, $fetchMethod))) $dataNode->appendChild($this->getRowXML($DOMDocument, $row, $customRowAttributes, $encodeCustomAttributes));
+		}
 
-		$fetchMethod = method_exists($rows, 'fetch') ? 'fetch' : (method_exists($rows, 'fetch_assoc') ? 'fetch_assoc' : (method_exists($rows, 'FetchRow') ? 'FetchRow' : NULL));
-		if (!$fetchMethod) foreach ($rows as $row) $xml.= $this->getRowXML($row, $customRowAttributes, $encodeCustomAttributes);
-		else while ($row = call_user_func(array($rows, $fetchMethod))) $xml.= $this->getRowXML($row, $customRowAttributes, $encodeCustomAttributes);
-
-		$xml.= "</data></table>\n";
-		return $xml;
+		return $DOMDocument->saveXML();
 	}
 
-	private function getRowXML($row, $customRowAttributes, $encodeCustomAttributes)
+	private function getRowXML($DOMDocument, $row, $customRowAttributes, $encodeCustomAttributes)
 	{
-		$xml = "<row id='" . self::escapeXML($this->_getRowField($row, 'id')) . "'";
-		foreach ($customRowAttributes as $name => $field) $xml.= " {$name}='" . ($encodeCustomAttributes ? base64_encode($this->_getRowField($row, $field)) : self::escapeXML($this->_getRowField($row, $field))) . "'";
-		$xml.= ">\n";
+		$rowNode = $DOMDocument->createElement('row');
+		$rowNode->setAttribute('id', $this->_getRowField($row, 'id'));
+		if ($customRowAttributes) foreach ($customRowAttributes as $name => $field) $rowNode->setAttribute($name, $encodeCustomAttributes ? base64_encode($this->_getRowField($row, $field)) : $this->_getRowField($row, $field));
 			
 		foreach ($this->columns as $name => $info) {
 			$field = $info['field'];
-			$xml.= "<column name='{$name}'><![CDATA[" . $this->_getRowField($row, $field) . "]]></column>\n";
+			$rowNode->appendChild($columnNode = $DOMDocument->createElement('column'));
+			if ($this->writeColumnNames) $columnNode->setAttribute('name', $name);
+			$columnNode->appendChild($DOMDocument->createCDATASection($this->_getRowField($row, $field)));
 		}
 
-		$xml.= "</row>\n";
-		return $xml;
+		return $rowNode;
 	}
 
-	public function renderXML($rows, $customRowAttributes=array(), $encodeCustomAttributes=false)
+	public function renderXML($rows=false, $customRowAttributes=false, $encodeCustomAttributes=false, $includeMetadata=true)
 	{
 		header('Content-Type: text/xml');
-		echo $this->getXML($rows, $customRowAttributes, $encodeCustomAttributes);
+		echo $this->getXML($rows, $customRowAttributes, $encodeCustomAttributes, $includeMetadata);
 	}
 
-	public function getJSON($rows, $customRowAttributes=array(), $encodeCustomAttributes=false)
+	public static function mapToArray($map)
 	{
-		$metadata = array();
-		foreach ($this->columns as $name => $info) {
-			$metadata[] = array(
+		// convert PHP's associative array in Javascript's array of objects
+		$array = array();
+		foreach ($map as $k => $v) {
+			if (is_array($v)) $array[] = array('label' => $k, 'values' => self::mapToArray($v));
+			else $array[] = array('value' => $k, 'label' => $v);
+		}
+
+		return $array;
+	}
+
+	public function getJSON($rows=false, $customRowAttributes=false, $encodeCustomAttributes=false, $includeMetadata=true)
+	{
+		return json_encode($this->getPOJO($rows, $customRowAttributes, $encodeCustomAttributes, $includeMetadata));
+	}
+
+	public function getPOJO($rows=false, $customRowAttributes=false, $encodeCustomAttributes=false, $includeMetadata=true)
+	{
+		$results = array();
+
+		if ($includeMetadata) {
+
+			$results['metadata'] = array();
+			foreach ($this->columns as $name => $info) {
+				$results['metadata'][] = array(
 				"name" => $name,
-				"label" => @iconv($this->encoding, $this->encoding."//IGNORE", $info['label']),
+				"label" => @iconv($this->encoding, "utf-8//IGNORE", $info['label']),
 				"datatype" => $info['type'],
 				"bar" => $info['bar'],
 				"editable" => $info['editable'],
-				"values" => $info['values']
-			);
+				"values" => is_array($info['values']) ? self::mapToArray($info['values']) : NULL
+				);
+			}
 		}
 
-		$data = array();
-		
-		$fetchMethod = method_exists($rows, 'fetch') ? 'fetch' : (method_exists($rows, 'fetch_assoc') ? 'fetch_assoc' : (method_exists($rows, 'FetchRow') ? 'FetchRow' : NULL));
-		if (!$fetchMethod) foreach ($rows as $row) $data[] = $this->getRowJSON($row, $customRowAttributes, $encodeCustomAttributes);
-		else while ($row = call_user_func(array($rows, $fetchMethod))) $data[] = $this->getRowJSON($row, $customRowAttributes, $encodeCustomAttributes);
+		if ($this->paginator !== null) $results['paginator'] = $this->paginator;
 
-		return json_encode(array("metadata" => $metadata, "data" => $data));
+		$results['data'] = array();
+		if ($rows) {
+			$fetchMethod = method_exists($rows, 'fetch') ? 'fetch' : (method_exists($rows, 'fetch_assoc') ? 'fetch_assoc' : (method_exists($rows, 'FetchRow') ? 'FetchRow' : NULL));
+			if (!$fetchMethod) foreach ($rows as $row) $results['data'][] = $this->getRowPOJO($row, $customRowAttributes, $encodeCustomAttributes);
+			else while ($row = call_user_func(array($rows, $fetchMethod))) $results['data'][] = $this->getRowPOJO($row, $customRowAttributes, $encodeCustomAttributes);
+		}
+
+		return $results;
 	}
 
-	private function getRowJSON($row, $customRowAttributes, $encodeCustomAttributes)
+	private function getRowPOJO($row, $customRowAttributes, $encodeCustomAttributes)
 	{
 		$data = array("id" => $this->_getRowField($row, 'id'), "values" => array());
-		foreach ($customRowAttributes as $name => $field) $data[$name] = $encodeCustomAttributes ? base64_encode($this->_getRowField($row, $field)) : $this->_getRowField($row, $field);
+		if ($customRowAttributes) foreach ($customRowAttributes as $name => $field) $data[$name] = $encodeCustomAttributes ? base64_encode($this->_getRowField($row, $field)) : $this->_getRowField($row, $field);
 			
 		foreach ($this->columns as $name => $info) {
 			$field = $info['field'];
-			$data["values"][$name] = $this->_getRowField($row, $field);
+			if ($this->writeColumnNames) $data["values"][$name] = $this->_getRowField($row, $field);
+			else $data["values"][] = $this->_getRowField($row, $field);
 		}
 
 		return $data;
 	}
-	
-	public function renderJSON($rows, $customRowAttributes=array(), $encodeCustomAttributes=false)
+
+	public function renderJSON($rows=false, $customRowAttributes=false, $encodeCustomAttributes=false, $includeMetadata=true)
 	{
 		header('Content-Type: text/json');
-		echo $this->getJSON($rows, $customRowAttributes, $encodeCustomAttributes);
+		echo $this->getJSON($rows, $customRowAttributes, $encodeCustomAttributes, $includeMetadata);
 	}
 
 	public static function parseInt($string) {
@@ -229,7 +298,7 @@ class EditableGrid {
 			if ($info['thousands_separator'] == 'dot') $info['thousands_separator'] = '.';
 
 			if ($info['unit'] && isset($unitTranslations[$info['unit']])) $info['unit'] = $unitTranslations[$info['unit']];
-			
+
 			return $info;
 	}
 
@@ -256,7 +325,7 @@ class EditableGrid {
 		if ($displayValue[strlen($displayValue) - 1] == '.') $displayValue = substr($displayValue, 0, strlen($displayValue) - 1);
 
 		if ($info['unit']) $displayValue = $info['unit_before_number'] ? ($info['unit'] . ' ' . $displayValue) : ($displayValue . ' ' . $info['unit']);
-		
+
 		return $displayValue;
 	}
 
@@ -278,8 +347,8 @@ class EditableGrid {
 			$pattern = "#";
 		}
 
-		// TODO: can't find how to use UTF8 into XLS number formats (for chinese currency symbol etc.)
-		$unit = $info['unit'] ? ($info['unit'] == '€' ? chr(128) : str_replace('?', '', @iconv($encoding, "latin1//TRANSLIT", $info['unit']))) : '';
+		// format is encoded in utf-8 for use in PHPExcel
+		$unit = $info['unit'] ? @iconv($encoding, "utf-8//TRANSLIT", $info['unit']) : '';
 		$before =  $unit && $info['unit_before_number'] ? "\"$unit \"" : '';
 		$after = $unit && $info['unit_before_number'] ? '' : "\" $unit\"";
 
