@@ -37,7 +37,7 @@
 			<div id="paginator"></div>
 		</div>  
 		
-		<script src="js/editablegrid-2.0.1.js"></script>   
+		<script src="js/editablegrid-2.1.0-b13.js"></script>   
 		<!-- I use jQuery for the Ajax methods -->
 		<script src="js/jquery-1.11.1.min.js" ></script>
 		<script src="js/demo.js" ></script>
@@ -50,6 +50,9 @@
                 // key typed in the filter field
                 $("#filter").keyup(function() {
                     datagrid.editableGrid.filter( $(this).val());
+
+                    // To filter on some columns, you can set an array of column index 
+                    //datagrid.editableGrid.filter( $(this).val(), [0,3,5]);
                   });
         
 			}; 
