@@ -35,3 +35,7 @@ but you can filter only on some columns. Below, the filter operates on columns 0
 
 	datagrid.editableGrid.filter( $(this).val(), [0,3,5]);
 	
+	
+## Responsive
+This example uses the first technique describes here http://elvery.net/demo/responsive-tables/. This technique is very simple, it hide less important columns on smaller screen sizes.
+	
