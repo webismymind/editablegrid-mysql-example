@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<!--
+/*
+ * examples/mysql/index.html
+ * 
+ * This file is part of EditableGrid.
+ * http://editablegrid.net
+ *
+ * Copyright (c) 2011 Webismymind SPRL
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://editablegrid.net/license
+ */
+-->
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>EditableGrid Demo - Database Link</title>
+		<link rel="stylesheet" href="css/style.css" type="text/css" media="screen">
+	</head>
+	
+	<body>
+		<div id="wrap">
+		<h1>EditableGrid Demo - Database Link</h1> 
+		
+			<!-- Feedback message zone -->
+			<div id="message"></div>
+
+			<!-- Grid contents -->
+			<div id="tablecontent"></div>
+		
+			<!-- Paginator control -->
+			<div id="paginator"></div>
+		</div>  
+		
+		<script src="js/editablegrid-2.0.1.js"></script>   
+		<!-- I use jQuery for the Ajax methods -->
+		<script src="js/jquery-1.7.2.min.js" ></script>
+		<script src="js/demo.js" ></script>
+
+		<script type="text/javascript">
+			window.onload = function() { 
+				datagrid = new DatabaseGrid();
+			}; 
+		</script>
+	</body>
+
+</html>
