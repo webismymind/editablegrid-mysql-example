@@ -27,6 +27,9 @@
 			<!-- Feedback message zone -->
 			<div id="message"></div>
 
+            <div id="toolbar">
+              <input type="text" id="filter" name="filter" placeholder="Filter :type any text here"  />
+            </div>
 			<!-- Grid contents -->
 			<div id="tablecontent"></div>
 		
@@ -36,12 +39,19 @@
 		
 		<script src="js/editablegrid-2.0.1.js"></script>   
 		<!-- I use jQuery for the Ajax methods -->
-		<script src="js/jquery-1.7.2.min.js" ></script>
+		<script src="js/jquery-1.11.1.min.js" ></script>
 		<script src="js/demo.js" ></script>
 
 		<script type="text/javascript">
+		
+            var datagrid = new DatabaseGrid();
 			window.onload = function() { 
-				datagrid = new DatabaseGrid();
+
+                // key typed in the filter field
+                $("#filter").keyup(function() {
+                    datagrid.editableGrid.filter( $(this).val());
+                  });
+        
 			}; 
 		</script>
 	</body>

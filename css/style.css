@@ -128,6 +128,9 @@ table.testgrid td {
 #filter { 
 	width: 250px;
 	margin-bottom: 10px; 
+    border: 1px solid #d1d1d1;
+    padding: 5px;
+    font-size: 1.1em;
 }
 
 #wrap {
