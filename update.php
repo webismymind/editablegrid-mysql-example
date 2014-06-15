@@ -1,7 +1,6 @@
 <?php
  
 /*
- * examples/mysql/loaddata.php
  * 
  * This file is part of EditableGrid.
  * http://editablegrid.net

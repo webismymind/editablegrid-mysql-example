@@ -66,6 +66,7 @@ $grid->addColumn('email', 'Email', 'email');
 $grid->addColumn('freelance', 'Freelance', 'boolean');  
 $grid->addColumn('lastvisit', 'Lastvisit', 'date');  
 $grid->addColumn('website', 'Website', 'string');  
+$grid->addColumn('action', 'Action', 'html', NULL, false, 'id');  
                                                                        
 $result = $mysqli->query('SELECT *, date_format(lastvisit, "%d/%m/%Y") as lastvisit FROM demo LIMIT 100');
 $mysqli->close();

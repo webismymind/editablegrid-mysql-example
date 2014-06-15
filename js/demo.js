@@ -66,8 +66,50 @@ DatabaseGrid.prototype.fetchGrid = function()  {
 };
 
 DatabaseGrid.prototype.initializeGrid = function(grid) {
+
+  var self = this;
+
+// render for the action column
+	grid.setCellRenderer("action", new CellRenderer({ 
+		render: function(cell, id) {                 
+		      cell.innerHTML+= "<img class='icon' src=\"images/delete.png\" onclick=\"datagrid.deleteRow("+id+");\" alt=\"delete\" title=\"Delete row\" />";
+		}
+	})); 
+
+
 	grid.renderGrid("tablecontent", "testgrid");
 };    
+
+DatabaseGrid.prototype.deleteRow = function(id) 
+{
+
+  var self = this;
+
+  if ( confirm('Are you sur you want to delete the row id ' + id )  ) {
+
+        $.ajax({
+		url: 'delete.php',
+		type: 'POST',
+		dataType: "html",
+		data: {
+			tablename : self.editableGrid.name,
+			id: id 
+		},
+		success: function (response) 
+		{ 
+			if (response == "ok" )
+		        self.editableGrid.removeRow(id);
+		},
+		error: function(XMLHttpRequest, textStatus, exception) { alert("Ajax failure\n" + errortext); },
+		async: true
+	});
+
+        
+  }
+			
+}; 
+        
+
    
 
 

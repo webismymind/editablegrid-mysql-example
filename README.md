@@ -35,6 +35,17 @@ but you can filter only on some columns. Below, the filter operates on columns 0
 
 	datagrid.editableGrid.filter( $(this).val(), [0,3,5]);
 	
+
+
+## CRUD Actions 
+A column **action** (type HTML) has been added. With a renderer, the content is redefined to add icons or any components to manage actions on the row
+
+### Delete
+The delete fonction call **delete.php** with the tablename and the row id. The script executes the query that deletes the row and returns a status. If it's ok, we remove the row from the javascript model : 
+
+	if (response == "ok" )
+		        self.editableGrid.removeRow(id);
+	
 	
 ## Responsive
 This example uses the first technique describes here http://elvery.net/demo/responsive-tables/. This technique is very simple, it hide less important columns on smaller screen sizes.
