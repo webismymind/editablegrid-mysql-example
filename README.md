@@ -35,6 +35,39 @@ but you can filter only on some columns. Below, the filter operates on columns 0
 
 	datagrid.editableGrid.filter( $(this).val(), [0,3,5]);
 	
+### Server side
+Coming...
+
+	
+## Pagination
+### Client side
+Step to add a paginator
+
+* Add a div to render the paginator
+       
+    ```
+   <!-- Paginator control -->
+   <div id="paginator"></div>
+   ```
+
+* In the constructor, define the pageSize and call the method that render the paginator once the table is rendererd.
+
+     ```
+ ...
+  // define the number of row visible by page
+      	pageSize: 10,
+      // Once the table is displayed, we update the paginator state
+        tableRendered:  function() {  updatePaginator(this); },
+  ```
+* The method updatePaginator builds and renders the paginator.
+
+
+
+
+
+### Server side
+Coming...	
+	
 
 
 ## CRUD Actions 

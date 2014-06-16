@@ -105,9 +105,14 @@ table.testgrid td {
 	padding: 5px;
 	border: 1px solid #E0E0E0;
 }
-table.testgrid td img.icon {
+img.icon {
   width: 16px;
   cursor: pointer;
+}
+#paginator .icon {
+  width: 24px;
+  margin: 3px;
+  vertical-align: middle;
 }
 
 #edition {
@@ -117,16 +122,16 @@ table.testgrid td img.icon {
 }
 
 #paginator {
-	font-family:  Helvetica, Arial, sans-serif;
   	margin: 10px 0;
-	font-size: 12px;
+	font-size: 1.4em;
 	text-align: center;
 	margin-bottom: 5px;
 }
 
-#paginator a { color:  #0078cc; text-decoration: none; font-size: 12px; }           
+#paginator a { color:  #0078cc; text-decoration: none;line-height: 40px; padding: 4px 8px;   }           
 #paginator a:hover { color: #000; }
-#paginator a:active { color: #777; }
+#paginator a:active, #currentpageindex {  background-color: #0078cc; color: #fff; border-radius: 5px;}
+#paginator span#currentpageindex {  padding: 4px 8px;  }
 #paginator a:focus { outline: 1px; }
 
 #filter { 
@@ -142,7 +147,4 @@ table.testgrid td img.icon {
 }
 
 
-#pagecontrol {
-	padding-bottom: 5px;
-	float: right;
-}
+
