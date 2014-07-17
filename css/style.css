@@ -105,6 +105,10 @@ table.testgrid td {
 	padding: 5px;
 	border: 1px solid #E0E0E0;
 }
+table.testgrid i {
+  font-size: 1.5em;
+  cursor: pointer;
+}
 img.icon {
   width: 16px;
   cursor: pointer;

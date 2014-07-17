@@ -76,7 +76,7 @@ DatabaseGrid.prototype.initializeGrid = function(grid) {
 // render for the action column
 	grid.setCellRenderer("action", new CellRenderer({ 
 		render: function(cell, id) {                 
-		      cell.innerHTML+= "<img class='icon' src=\"images/delete.png\" onclick=\"datagrid.deleteRow("+id+");\" alt=\"delete\" title=\"Delete row\" />";
+		      cell.innerHTML+= "<i onclick=\"datagrid.deleteRow("+id+");\" class='fa fa-trash-o' ></i>";
 		}
 	})); 
 
@@ -171,13 +171,13 @@ function updatePaginator(grid, divId)
 	});
 		
 	// "first" link
-	var link = $("<a class='nobg'>").html("<img class='icon' src=\"images/move_first.png\" alt=\"\" />");
+	var link = $("<a class='nobg'>").html("<i class='fa fa-fast-backward'></i>");
 	if (!grid.canGoBack()) link.css({ opacity : 0.4, filter: "alpha(opacity=40)" });
 	else link.css("cursor", "pointer").click(function(event) { grid.firstPage(); });
 	paginator.append(link);
 
 	// "prev" link
-	link = $("<a class='nobg'>").html("<img class='icon' src=\"images/move_prev.png\" alt=\"\" />");
+	link = $("<a class='nobg'>").html("<i class='fa fa-backward'></i>");
 	if (!grid.canGoBack()) link.css({ opacity : 0.4, filter: "alpha(opacity=40)" });
 	else link.css("cursor", "pointer").click(function(event) { grid.prevPage(); });
 	paginator.append(link);
@@ -186,13 +186,13 @@ function updatePaginator(grid, divId)
 	for (p = 0; p < pages.length; p++) paginator.append(pages[p]).append(" ");
 	
 	// "next" link
-	link = $("<a class='nobg'>").html("<img class='icon' src=\"images/move_next.png\" alt=\"\" />");
+	link = $("<a class='nobg'>").html("<i class='fa fa-forward'>");
 	if (!grid.canGoForward()) link.css({ opacity : 0.4, filter: "alpha(opacity=40)" });
 	else link.css("cursor", "pointer").click(function(event) { grid.nextPage(); });
 	paginator.append(link);
 
 	// "last" link
-	link = $("<a class='nobg'>").html("<img class='icon' src=\"images/move_last.png\" alt=\"\" />");
+	link = $("<a class='nobg'>").html("<i class='fa fa-fast-forward'>");
 	if (!grid.canGoForward()) link.css({ opacity : 0.4, filter: "alpha(opacity=40)" });
 	else link.css("cursor", "pointer").click(function(event) { grid.lastPage(); });
 	paginator.append(link);
