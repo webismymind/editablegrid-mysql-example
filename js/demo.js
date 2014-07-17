@@ -114,6 +114,45 @@ DatabaseGrid.prototype.deleteRow = function(id)
 }; 
 
 
+DatabaseGrid.prototype.addRow = function(id) 
+{
+
+  var self = this;
+
+        $.ajax({
+		url: 'add.php',
+		type: 'POST',
+		dataType: "html",
+		data: {
+			tablename : self.editableGrid.name,
+			name:  $("#name").val(),
+			firstname:  $("#firstname").val()
+		},
+		success: function (response) 
+		{ 
+			if (response == "ok" ) {
+   
+                // hide form
+                showAddForm();   
+        		$("#name").val('');
+                $("#firstname").val('');
+			    
+                alert("Row added : reload model");
+                self.fetchGrid();
+           	}
+            else 
+              alert("error");
+		},
+		error: function(XMLHttpRequest, textStatus, exception) { alert("Ajax failure\n" + errortext); },
+		async: true
+	});
+
+        
+			
+}; 
+
+
+
 
 function updatePaginator(grid, divId)
 {
@@ -158,6 +197,14 @@ function updatePaginator(grid, divId)
 	else link.css("cursor", "pointer").click(function(event) { grid.lastPage(); });
 	paginator.append(link);
 }; 
+
+
+function showAddForm() {
+  if ( $("#addform").is(':visible') ) 
+      $("#addform").hide();
+  else
+      $("#addform").show();
+}
 
         
 

@@ -79,7 +79,11 @@ The delete fonction call **delete.php** with the tablename and the row id. The s
 	if (response == "ok" )
 		        self.editableGrid.removeRow(id);
 	
-	
+### Add
+By clicking on the add button, a form is shown to enter a name and a firstname. 
+Data are sent to add.php that execute the insert query and return the status of the operation. 
+
+
 ## Responsive
 This example uses the first technique describes here http://elvery.net/demo/responsive-tables/. This technique is very simple, it hide less important columns on smaller screen sizes.
 	
