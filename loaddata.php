@@ -67,8 +67,10 @@ $grid->addColumn('freelance', 'Freelance', 'boolean');
 $grid->addColumn('lastvisit', 'Lastvisit', 'date');  
 $grid->addColumn('website', 'Website', 'string');  
 $grid->addColumn('action', 'Action', 'html', NULL, false, 'id');  
+
+$mydb_tablename = (isset($_GET['db_tablename'])) ? $_GET['db_tablename'] : 'demo';
                                                                        
-$result = $mysqli->query('SELECT *, date_format(lastvisit, "%d/%m/%Y") as lastvisit FROM demo ');
+$result = $mysqli->query('SELECT *, date_format(lastvisit, "%d/%m/%Y") as lastvisit FROM $mydb_tablename ');
 $mysqli->close();
 
 // send data to the browser
