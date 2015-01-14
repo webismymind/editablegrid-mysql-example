@@ -21,6 +21,31 @@ Then copy **config.php.sample** to **config.php** and edit the values with yours
 	
 You can load index.php in a browser and you should see the content of the table demo.
 
+##Load data
+EdditableGrid supports two types of data : JSON and XML. In this example, we use JSON : 
+
+	$grid->renderJSON($result);  
+
+But this works too : 
+	
+	$grid->renderXML($result); 
+
+Be careful to use the appropriate function in the Javascript.
+JSON : 
+
+	DatabaseGrid.prototype.fetchGrid = function()  {
+	// call a PHP script to get the data
+		this.editableGrid.loadJSON("loaddata.php?db_tablename=demo");
+	};
+
+XML :
+
+	DatabaseGrid.prototype.fetchGrid = function()  {
+	// call a PHP script to get the data
+	this.editableGrid.loadXML("loaddata.php?db_tablename=demo");
+	};
+
+
 ## Filter
 ### Client side
 It's very easy to filter the content of the table. You can use

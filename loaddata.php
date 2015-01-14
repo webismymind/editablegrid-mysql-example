@@ -74,5 +74,5 @@ $result = $mysqli->query('SELECT *, date_format(lastvisit, "%d/%m/%Y") as lastvi
 $mysqli->close();
 
 // send data to the browser
-$grid->renderXML($result);
+$grid->renderJSON($result);
 
