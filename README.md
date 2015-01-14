@@ -81,7 +81,7 @@ The delete fonction call **delete.php** with the tablename and the row id. The s
 	
 ### Add
 By clicking on the add button, a form is shown to enter a name and a firstname. 
-Data are sent to add.php that execute the insert query and return the status of the operation. 
+Data are sent to add.php that executes the insert query and returns the status of the operation. 
 
 
 ## Responsive

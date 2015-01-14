@@ -35,9 +35,35 @@ class EditableGrid {
 		return $labels;
 	}
 
-	public function addColumn($name, $label, $type, $values = NULL, $editable = true, $field = NULL, $bar = true)
+	public function getColumnFields()
 	{
-		$this->columns[$name] = array("field" => $field ? $field : $name, "label" => $label, "type" => $type, "editable" => $editable, "bar" => $bar, "values" => $values );
+		$fields = array();
+		foreach ($this->columns as $name => $column) $fields[$name] = $column['field'];
+		return $fields;
+	}
+
+	public function getColumnTypes()
+	{
+		$types = array();
+		foreach ($this->columns as $name => $column) $types[$name] = $column['type'];
+		return $types;
+	}
+
+	public function getColumnValues()
+	{
+		$values = array();
+		foreach ($this->columns as $name => $column) $values[$name] = $column['values'];
+		return $values;
+	}
+
+	public function addColumn($name, $label, $type, $values = NULL, $editable = true, $field = NULL, $bar = true, $hidden = false)
+	{
+		$this->columns[$name] = array("field" => $field ? $field : $name, "label" => $label, "type" => $type, "editable" => $editable, "bar" => $bar, "hidden" => $hidden, "values" => $values);
+	}
+
+	public function setHiddenColumns($columns)
+	{
+		foreach ($columns as $column) if (isset($this->columns[$column])) $this->columns[$column]['hidden'] = true;
 	}
 
 	/**
@@ -55,10 +81,10 @@ class EditableGrid {
 
 	private function _getRowField($row, $field)
 	{
-		$value = is_array($row) ? (isset($row[$field]) ? $row[$field] : '') : (isset($row->$field) ? $row->$field : '');
+		$value = is_array($row) ? (isset($row[$field]) ? $row[$field] : NULL) : (isset($row->$field) ? $row->$field : NULL);
 
 		// to avoid any issue with javascript not able to parse XML, ensure data is valid for encoding
-		return @iconv($this->encoding, "utf-8//IGNORE", $value);
+		return is_string($value) ? @iconv($this->encoding, "utf-8//IGNORE", $value) : $value;
 	}
 
 	public function getXML($rows=false, $customRowAttributes=false, $encodeCustomAttributes=false, $includeMetadata=true)
@@ -80,6 +106,7 @@ class EditableGrid {
 				$columnNode->setAttribute('label', @iconv($this->encoding, "utf-8//IGNORE", $info['label']));
 				$columnNode->setAttribute('datatype', @iconv($this->encoding, "utf-8//IGNORE", $info['type']));
 				if (!$info['bar']) $columnNode->setAttribute('bar', 'false');
+				if ($info['hidden']) $columnNode->setAttribute('hidden', 'true');
 				$columnNode->setAttribute('editable', $info['editable'] ? "true" : "false");
 
 				if (is_array($info['values'])) {
@@ -157,8 +184,8 @@ class EditableGrid {
 		// convert PHP's associative array in Javascript's array of objects
 		$array = array();
 		foreach ($map as $k => $v) {
-			if (is_array($v)) $array[] = array('label' => $k, 'values' => self::mapToArray($v));
-			else $array[] = array('value' => $k, 'label' => $v);
+			if (is_array($v)) $array[] = array('label' => (string) $k, 'values' => self::mapToArray($v));
+			else $array[] = array('value' => (string) $k, 'label' => $v);
 		}
 
 		return $array;
@@ -182,6 +209,7 @@ class EditableGrid {
 				"label" => @iconv($this->encoding, "utf-8//IGNORE", $info['label']),
 				"datatype" => $info['type'],
 				"bar" => $info['bar'],
+				"hidden" => $info['hidden'],
 				"editable" => $info['editable'],
 				"values" => is_array($info['values']) ? self::mapToArray($info['values']) : NULL
 				);

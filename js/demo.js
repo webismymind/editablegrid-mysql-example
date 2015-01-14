@@ -25,7 +25,7 @@ function updateCellValue(editableGrid, rowIndex, columnIndex, oldValue, newValue
 		url: 'update.php',
 		type: 'POST',
 		dataType: "html",
-		data: {
+	   		data: {
 			tablename : editableGrid.name,
 			id: editableGrid.getRowId(rowIndex), 
 			newvalue: editableGrid.getColumnType(columnIndex) == "boolean" ? (newValue ? 1 : 0) : newValue, 
@@ -52,7 +52,7 @@ function DatabaseGrid()
 	this.editableGrid = new EditableGrid("demo", {
 		enableSort: true,
 	    // define the number of row visible by page
-      	pageSize: 10,
+      	pageSize: 50,
       // Once the table is displayed, we update the paginator state
         tableRendered:  function() {  updatePaginator(this); },
    	    tableLoaded: function() { datagrid.initializeGrid(this); },
@@ -76,7 +76,7 @@ DatabaseGrid.prototype.initializeGrid = function(grid) {
 // render for the action column
 	grid.setCellRenderer("action", new CellRenderer({ 
 		render: function(cell, id) {                 
-		      cell.innerHTML+= "<i onclick=\"datagrid.deleteRow("+id+");\" class='fa fa-trash-o' ></i>";
+		      cell.innerHTML+= "<i onclick=\"datagrid.deleteRow("+id+");\" class='fa fa-trash-o red' ></i>";
 		}
 	})); 
 

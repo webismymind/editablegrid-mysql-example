@@ -159,11 +159,11 @@ img.icon {
 
 #addform {
   position: fixed;
-  background-color: #fff;
+  background-color: #f6f6f6;
   box-shadow: 3px 3px 3px #636363;
   display: none;
   width: 400px;
-  height: 200px;
+  height: 120px;
   border-radius: 20px;
   padding: 20px;
   left: 50%;
@@ -174,18 +174,13 @@ img.icon {
   border: 1px solid #e1e1e1;
 }
 #addform .row {
-  margin: 10px 0;
+  margin: 10px 0 20px 0;
 }
 #addform input {
   width: 380px;
 	padding: 5px 9px;
 	border: solid 1px #e1d1e1;
 	outline: 0;
-	background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
-	background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
-	box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
-	-moz-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;
-	-webkit-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px; 
 }
    
 form input:hover, form textarea:hover, form input:focus, form textarea:focus { 
@@ -198,20 +193,75 @@ form input:hover, form textarea:hover, form input:focus, form textarea:focus {
   text-align: right;
 }
 .button {
-  border-radius: 3px;
-  padding: 5px 10px;
-  background-color: #f2f2f2;
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
   cursor: pointer;
-  border: solid 1px #e1d1e1;
-  color: #313131;
-  font-size: 1.3em;
-  background: -webkit-gradient(linear, left top, left 25, from(#f2f2f2), color-stop(4%, #EEEEEE), to(#f2f2f2));
-  background: -moz-linear-gradient(top, #f2f2f2, #EEEEEE 1px, #f2f2f2 25px);
-	
-}
-.button:hover {
-text-decoration: none;
-}
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 3px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  color: #333333;
+  background-color: #f1f1f1;
+  border-color: #cccccc;
+  transition: background-color 0.5s; }
+
+.button:hover,
+.button:focus,
+.button:active,
+.button:active {
+  color: #333333;
+  background-color: #cac9cb;
+  border-color: #adadad;
+  text-decoration: none; }
+
+.button i.fa {
+  /** usefull only with font-awesome icons */
+  margin-right: 5px; }
+
+/**** Delete button ***/
+.button.delete {
+  color: #ffffff;
+  background-color: #d9534f;
+  border-color: #d43f3a; }
+
+.button.delete:hover,
+.button.delete:focus,
+.button.delete:active,
+.button.delete.active {
+  color: #ffffff;
+  background-color: #d2322d;
+  border-color: #ac2925; }
+
+/****** Add or green button ****/
+.button.add, .button.green {
+  color: #ffffff;
+  background-color: #6ccb63;
+  border-color: #5db056; }
+
+.button.add:hover,
+.button.add:focus,
+.button.add:active,
+.button.add.active,
+.button.green:hover,
+.button.green:focus,
+.button.green:active,
+.button.green.active {
+  color: #ffffff;
+  background-color: #5aad55;
+  border-color: #5db056; }
+
+
+i.fa.red { color: #d2322d }
 
 
 
