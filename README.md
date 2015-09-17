@@ -19,10 +19,10 @@ Then copy **config.php.sample** to **config.php** and edit the values with yours
 	"db_host" => "localhost"
 	);   
 	
-You can load index.php in a browser and you should see the content of the table demo.
+You can load index.html in a browser and you should see the content of the table demo.
 
 ##Load data
-EdditableGrid supports two types of data : JSON and XML. In this example, we use JSON : 
+EditableGrid supports two types of data : JSON and XML. In this example, we use JSON : 
 
 	$grid->renderJSON($result);  
 
@@ -52,7 +52,7 @@ It's very easy to filter the content of the table. You can use
 
 	EditableGrid.prototype.filter = function(filterString, cols)
 	
-In this exemple, the filter operates on all columns 
+In this example, the filter operates on all columns 
 	
 	datagrid.editableGrid.filter( $(this).val());
 
@@ -75,7 +75,7 @@ Step to add a paginator
    <div id="paginator"></div>
    ```
 
-* In the constructor, define the pageSize and call the method that render the paginator once the table is rendererd.
+* In the constructor, define the pageSize and call the method that renders the paginator, once the table is rendererd.
 
      ```
  ...
@@ -99,7 +99,7 @@ Coming...
 A column **action** (type HTML) has been added. With a renderer, the content is redefined to add icons or any components to manage actions on the row
 
 ### Delete
-The delete fonction call **delete.php** with the tablename and the row id. The script executes the query that deletes the row and returns a status. If it's ok, we remove the row from the javascript model : 
+The delete fonction calls **delete.php** with the tablename and the row id. The script executes the query that deletes the row and returns a status. If it's ok, we remove the row from the javascript model : 
 
 	if (response == "ok" )
 		        self.editableGrid.removeRow(id);
