@@ -21,16 +21,18 @@
 		<link rel="stylesheet" href="css/responsive.css" type="text/css" media="screen">
 
         <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
-		<link rel="stylesheet" href="css/font-awesome-4.1.7/css/font-awesome.min.css" type="text/css" media="screen">
+		<link rel="stylesheet" href="css/font-awesome-4.7.0/css/font-awesome.min.css" type="text/css" media="screen">
 
     </head>
 	
-	<body>
+    <body>
+
+      	<div id="message"></div>
 		<div id="wrap">
 		<h1>EditableGrid Demo - Database Link</h1> 
 		
 			<!-- Feedback message zone -->
-			<div id="message"></div>
+
 
             <div id="toolbar">
               <input type="text" id="filter" name="filter" placeholder="Filter :type any text here"  />
@@ -46,7 +48,7 @@
 		</div>  
 		
 		<script src="js/jquery-1.11.1.min.js" ></script>
-		<script src="js/editablegrid-2.1.0-b25.js"></script>   
+		<script src="js/editablegrid-2.1.0-49.js"></script>   
         <!-- EditableGrid test if jQuery UI is present. If present, a datepicker is automatically used for date type -->
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 		<script src="js/demo.js" ></script>
@@ -56,11 +58,14 @@
             var datagrid; 
             
             window.onload = function() { 
-                datagrid = new DatabaseGrid();
+              datagrid = new DatabaseGrid();
+
+
 
                 // key typed in the filter field
                 $("#filter").keyup(function() {
-                    datagrid.editableGrid.filter( $(this).val());
+                  datagrid.editableGrid.filter( $(this).val());
+
                     // To filter on some columns, you can set an array of column index 
                     //datagrid.editableGrid.filter( $(this).val(), [0,3,5]);
                   });

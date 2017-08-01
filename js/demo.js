@@ -15,6 +15,12 @@ function highlightRow(rowId, bgColor, after)
 function highlight(div_id, style) {
 	highlightRow(div_id, style == "error" ? "#e5afaf" : style == "warning" ? "#ffcc00" : "#8dc70a");
 }
+
+
+
+function message ( type, message) {    
+	$('#message').html("<div class=\"notification  "+type+"\">"+message+"</div>").slideDown('normal').delay(1800).slideToggle('slow');
+}
         
 /**
    updateCellValue calls the PHP script that will update the database. 
@@ -50,9 +56,16 @@ function updateCellValue(editableGrid, rowIndex, columnIndex, oldValue, newValue
 function DatabaseGrid() 
 { 
 	this.editableGrid = new EditableGrid("demo", {
-		enableSort: true,
+      enableSort: true,
+
+
+      /* Comment this line if you set serverSide to true */
 	    // define the number of row visible by page
-      	pageSize: 50,
+      /*pageSize: 50,*/
+
+      /* This property enables the serverSide part */
+      serverSide: true,
+
       // Once the table is displayed, we update the paginator state
         tableRendered:  function() {  updatePaginator(this); },
    	    tableLoaded: function() { datagrid.initializeGrid(this); },
@@ -60,7 +73,15 @@ function DatabaseGrid()
    	    	updateCellValue(this, rowIndex, columnIndex, oldValue, newValue, row);
        	}
  	});
-	this.fetchGrid(); 
+  this.fetchGrid(); 
+
+
+  
+    $("#filter").val(this.editableGrid.currentFilter != null ? this.editableGrid.currentFilter : "");
+	if ( this.editableGrid.currentFilter != null && this.editableGrid.currentFilter.length > 0)
+	  $("#filter").addClass('filterdefined');
+    else
+	  $("#filter").removeClass('filterdefined');
 	
 }
 
@@ -102,8 +123,10 @@ DatabaseGrid.prototype.deleteRow = function(id)
 		},
 		success: function (response) 
 		{ 
-			if (response == "ok" )
-		        self.editableGrid.removeRow(id);
+          if (response == "ok" ) {
+              message("success","Row deleted");
+              self.fetchGrid();
+          }
 		},
 		error: function(XMLHttpRequest, textStatus, exception) { alert("Ajax failure\n" + errortext); },
 		async: true
@@ -137,13 +160,12 @@ DatabaseGrid.prototype.addRow = function(id)
                 showAddForm();   
         		$("#name").val('');
                 $("#firstname").val('');
-			    
-                alert("Row added : reload model");
+                message("success","Row added : reload model");
                 self.fetchGrid();
            	}
             else 
-              alert("error");
-		},
+            message("error","Error occured");		
+        },
 		error: function(XMLHttpRequest, textStatus, exception) { alert("Ajax failure\n" + errortext); },
 		async: true
 	});

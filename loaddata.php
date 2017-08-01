@@ -69,10 +69,68 @@ $grid->addColumn('website', 'Website', 'string');
 $grid->addColumn('action', 'Action', 'html', NULL, false, 'id');  
 
 $mydb_tablename = (isset($_GET['db_tablename'])) ? stripslashes($_GET['db_tablename']) : 'demo';
+
+
+error_log(print_r($_GET,true));
+
+$query = 'SELECT *, date_format(lastvisit, "%d/%m/%Y") as lastvisit FROM '.$mydb_tablename ;
+$queryCount = 'SELECT count(id) as nb FROM '.$mydb_tablename;
+
+$totalUnfiltered =$mysqli->query($queryCount)->fetch_row()[0];
+$total = $totalUnfiltered;
+
+
+/* SERVER SIDE */
+/* If you have set serverSide : true in your Javascript code, $_GET contains 3 additionnal parameters : page, filter, sort
+ * this parameters allow you to adapt your query  
+ *
+ */
+$page=0;
+if ( isset($_GET['page']) && is_numeric($_GET['page'])  )
+  $page =  (int) $_GET['page'];
+
+
+$rowByPage=50;
+
+$from= ($page-1) * $rowByPage;
+
+if ( isset($_GET['filter']) && $_GET['filter'] != "" ) {
+  $filter =  $_GET['filter'];
+  $query .= '  WHERE name like "%'.$filter.'%" OR firstname like "%'.$filter.'%"';
+  $queryCount .= '  WHERE name like "%'.$filter.'%" OR firstname like "%'.$filter.'%"';
+  $total =$mysqli->query($queryCount)->fetch_row()[0];
+}
+
+if ( isset($_GET['sort']) && $_GET['sort'] != "" )
+  $query .= " ORDER BY " . $_GET['sort'] . (  $_GET['asc'] == "0" ? " DESC " : "" );
+
+
+$query .= " LIMIT ". $from. ", ". $rowByPage;
+
+error_log("pageCount = " . ceil($total/$rowByPage));
+error_log("total = " .$total);
+error_log("totalUnfiltered = " .$totalUnfiltered);
+
+$grid->setPaginator(ceil($total/$rowByPage), (int) $total, (int) $totalUnfiltered, null);
+
+/* END SERVER SIDE */ 
+
+error_log($query);
+
                                                                        
-$result = $mysqli->query('SELECT *, date_format(lastvisit, "%d/%m/%Y") as lastvisit FROM '.$mydb_tablename );
+$result = $mysqli->query($query );
+
+
+
+
+
 $mysqli->close();
 
+
+
+
+
 // send data to the browser
-$grid->renderJSON($result);
+
+$grid->renderJSON($result,false, false, !isset($_GET['data_only']));
 

@@ -1,0 +1,35 @@
+/** 
+ * Make table responsive.
+ * Solution foun here : http://elvery.net/demo/responsive-tables/
+ **/
+
+@media only screen and (max-width: 1100px) {
+	table.testgrid td:nth-child(11), 
+	table.testgrid th:nth-child(11),
+	table.testgrid td:nth-child(10), 
+	table.testgrid th:nth-child(10)
+	
+	{display: none;}
+}
+
+
+@media only screen and (max-width: 950px) {
+	table.testgrid td:nth-child(9), 
+	table.testgrid th:nth-child(9), 
+	table.testgrid td:nth-child(8), 
+	table.testgrid th:nth-child(8) 
+
+	{display: none;}
+}
+ 
+@media only screen and (max-width: 640px) {
+	table.testgrid td:nth-child(7),
+	table.testgrid th:nth-child(7),
+	table.testgrid td:nth-child(6),
+	table.testgrid th:nth-child(6){display: none;}
+}
+
+@media only screen and (max-width: 400px) {
+	table.testgrid td:nth-child(5),
+	table.testgrid th:nth-child(5){display: none;}
+}
