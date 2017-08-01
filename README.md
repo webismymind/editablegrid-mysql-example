@@ -65,7 +65,7 @@ Coming...
 
 	
 ## Pagination
-### Client side
+### Client sid
 Step to add a paginator
 
 * Add a div to render the paginator
@@ -78,7 +78,6 @@ Step to add a paginator
 * In the constructor, define the pageSize and call the method that renders the paginator, once the table is rendererd.
 
      ```
- ...
   // define the number of row visible by page
       	pageSize: 10,
       // Once the table is displayed, we update the paginator state
