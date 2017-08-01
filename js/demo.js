@@ -82,6 +82,7 @@ DatabaseGrid.prototype.initializeGrid = function(grid) {
 
 
 	grid.renderGrid("tablecontent", "testgrid");
+
 };    
 
 DatabaseGrid.prototype.deleteRow = function(id) 
